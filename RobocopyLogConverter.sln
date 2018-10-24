@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobocopyLog2Json", "RobocopyLog2Json\RobocopyLog2Json.csproj", "{4119167F-E56A-45E5-8779-2C503F20069E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobocopyLogConverter", "RobocopyLogConverter\RobocopyLogConverter.csproj", "{4119167F-E56A-45E5-8779-2C503F20069E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
