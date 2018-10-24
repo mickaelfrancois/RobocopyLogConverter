@@ -2,7 +2,7 @@
   "profiles": {
     "RobocopyLog2Json": {
       "commandName": "Project",
-      "commandLineArgs": "D:\\Programmes\\Backup\\Log\\20181018-Developpement-log.txt"
+      "commandLineArgs": "-d D:\\Programmes\\Backup\\Log\\"
     }
   }
 }

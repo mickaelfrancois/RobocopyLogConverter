@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace RobocopyLogConverter
@@ -43,10 +44,33 @@ namespace RobocopyLogConverter
         LogModel _log;
 
 
-        public LogModel ConvertToJson(string file)
+        public IEnumerable<LogModel> ConvertFolderToJson(string folder)
+        {
+            if (Directory.Exists(folder) == false)
+                throw new FileNotFoundException($"Folder {folder} was not found.");
+
+            var results = new List<LogModel>();
+
+            foreach (var file in Directory.GetFiles(folder, "*.txt"))
+            {
+                try
+                {
+                    results.Add(ConvertFileToJson(file));
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine(ex.Message);
+                }
+            }
+
+            return results;
+        }
+
+
+        public LogModel ConvertFileToJson(string file)
         {
             if (File.Exists(file) == false)
-                throw new FileNotFoundException($"Fiel {file} was not found.");
+                throw new FileNotFoundException($"File {file} was not found.");
 
             _log = new LogModel();
 
@@ -56,7 +80,6 @@ namespace RobocopyLogConverter
 
             if (CheckHeader() == false)
                 throw new Exception("Robocopy header was not found.");
-
 
             ParseStartDateTime();
             ParseSource();
@@ -75,11 +98,13 @@ namespace RobocopyLogConverter
         }
 
 
+
+
         private void ParseHeader()
         {
             string line = ReadLine();
 
-            do
+            while (line != null)
             {
                 if (line.StartsWith(KExcludedFiles))
                     ParseExcludedFiles(line);
@@ -95,7 +120,6 @@ namespace RobocopyLogConverter
 
                 line = ReadLine();
             }
-            while (line != null);
         }
 
 
@@ -103,7 +127,7 @@ namespace RobocopyLogConverter
         {
             string line = ReadLine();
 
-            do
+            while (line != null)
             {
                 if (line.StartsWith(KFolder))
                     ParseStatisticsFolders(line);
@@ -117,15 +141,12 @@ namespace RobocopyLogConverter
                 else if (line.StartsWith(KDuration))
                     ParseStatisticsDurations(line);
 
-                //else if (line.StartsWith(KOutput))
-                //    parseo(line);
-
                 else if (line.StartsWith(KEndStartTime))
                     ParseEndDateTime(line);
 
                 line = ReadLine();
             }
-            while (line != null);
+
         }
 
 
@@ -169,14 +190,14 @@ namespace RobocopyLogConverter
         {
             int[] stats = new int[6];
 
-            while(line.IndexOf("  ")>= 0)
+            while (line.IndexOf("  ") >= 0)
                 line = line.Replace("  ", " ");
 
-            string[] statArray = line.Split(' ',  StringSplitOptions.RemoveEmptyEntries);
-            
+            string[] statArray = line.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
             for (int i = 1; i <= 6; i++)
             {
-                stats[i-1] = Int32.Parse(statArray[i].Trim());
+                stats[i - 1] = Int32.Parse(statArray[i].Trim());
             }
 
             return stats;
@@ -187,14 +208,13 @@ namespace RobocopyLogConverter
         {
             string line = ReadLine();
 
-            do
+            while (line != null)
             {
                 if (line.StartsWith("-----------------------------"))
                     break; // End of file section
 
                 line = ReadLine();
             }
-            while (line != null);
         }
 
 
@@ -209,7 +229,7 @@ namespace RobocopyLogConverter
         private void ParseStartDateTime()
         {
             string line = ReadLine(KStartDateTimeLineNumber);
-            if( line.StartsWith(KStartDateTime))
+            if (line.StartsWith(KStartDateTime))
             {
                 _log.Start = DateTime.Parse(line.Substring(KStartDateTime.Length));
             }
@@ -319,7 +339,7 @@ namespace RobocopyLogConverter
         {
             string line = "";
 
-            while(_currentLineNumber < lineNumber && line != null)
+            while (_currentLineNumber < lineNumber && line != null)
             {
                 line = ReadLine();
             }
