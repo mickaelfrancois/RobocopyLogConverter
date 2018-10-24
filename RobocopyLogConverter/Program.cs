@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using System;
+using System.IO;
 
 namespace RobocopyLogConverter
 {
@@ -12,6 +13,7 @@ namespace RobocopyLogConverter
             
             var fileOption = commandLineApplication.Option("-f | --file", "Robocopy log file.", CommandOptionType.SingleValue);
             var directoryOption = commandLineApplication.Option("-d | --directory", "Robocopy log folder.", CommandOptionType.SingleValue);
+            var outputOption = commandLineApplication.Option("-o | --output", "Output JSON to file.", CommandOptionType.SingleValue);
 
             commandLineApplication.HelpOption("-? | -h | --help");
 
@@ -20,13 +22,25 @@ namespace RobocopyLogConverter
                 if (fileOption.HasValue())
                 {
                     var result = logConverter.ConvertFileToJson(fileOption.Value());
-                    Console.Write(Newtonsoft.Json.JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented));
+                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented);
+
+                    if (outputOption.HasValue())
+                        GenerateFileOutput(jsonData, outputOption.Value());
+                    else
+                        Console.Write(jsonData);
+
                     return 0;
                 }
                 else if (directoryOption.HasValue())
                 {
                     var result = logConverter.ConvertFolderToJson(directoryOption.Value());
-                    Console.Write(Newtonsoft.Json.JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented));
+                    string jsonData = Newtonsoft.Json.JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented);
+
+                    if (outputOption.HasValue())
+                        GenerateFileOutput(jsonData, outputOption.Value());
+                    else
+                        Console.Write(jsonData);
+
                     return 0;
                 }
                 else
@@ -34,6 +48,12 @@ namespace RobocopyLogConverter
             });
 
             return commandLineApplication.Execute(args);
+        }
+
+
+        private static void GenerateFileOutput(string jsonData, string file)
+        {
+            File.WriteAllText(file, jsonData, System.Text.Encoding.UTF8);
         }
     }
 }
