@@ -53,7 +53,7 @@ namespace RobocopyLogConverter
 
         private static void GenerateFileOutput(string jsonData, string file)
         {
-            File.WriteAllText(file, jsonData, System.Text.Encoding.UTF8);
+            File.WriteAllText(file, jsonData);
         }
     }
 }
